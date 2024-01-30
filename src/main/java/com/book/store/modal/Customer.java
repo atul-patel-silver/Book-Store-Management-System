@@ -25,11 +25,13 @@ public class Customer implements Serializable {
     @Column(name = "customerName")
     private String customerName;
 
-    @Column(name = "customer_emailId")
+    @Column(name = "customer_emailId",unique = true)
     private String customerEmailId;
 
     private String password;
 
+    @Column(name = "customer_Enable")
+    private boolean enable;
     private String role;
 
     private LocalDateTime joinDate;

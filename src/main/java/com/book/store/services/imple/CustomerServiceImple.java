@@ -19,6 +19,11 @@ public class CustomerServiceImple implements CustomerService {
     }
 
     @Override
+    public Customer customerFindByEmailId(String customerEmailId) {
+        return this.customerRepository.findByCustomerEmailId(customerEmailId);
+    }
+
+    @Override
     public Customer get(int id) {
         return this.customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer"," Id ",Integer.toString(id)));
     }

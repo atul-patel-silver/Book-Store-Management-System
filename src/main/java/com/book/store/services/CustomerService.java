@@ -10,6 +10,9 @@ public interface CustomerService {
     public Customer save(Customer  customer);
 
 
+    public Customer customerFindByEmailId(String customerEmailId);
+
+
     public Customer get(int id);
 
     public List<Customer> getAll();
