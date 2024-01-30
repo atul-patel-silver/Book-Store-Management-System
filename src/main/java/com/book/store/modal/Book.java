@@ -1,0 +1,43 @@
+package com.book.store.modal;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "tbl_book")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_Id")
+    private Long bookId;
+    @Column(name = "book_Title")
+    private String bookTitle;
+    @Column(name = "book_Author")
+    private String bookAuthor;
+    @Column(name = "book_ISBN")
+    private String bookISBN;
+    @Column(name = "book_Status")
+    private String bookStatus;
+    @Column(name = "book_Price")
+    private String bookPrice;
+    @Column(name = "book_Quantity")
+    private int bookQuantity;
+    @Column(name = "book_ImageUrl",length = 2000)
+    private String bookImageUrl;
+    @Column(name = "book_discription",length = 6000)
+    private String discription;
+    @Column(name = "book_Add_Date")
+    private LocalDate bookAddDate;
+
+    @ManyToOne
+    @JoinColumn(name = "bookCategory_Id")
+    private BookCategory category;
+}
