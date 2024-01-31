@@ -5,6 +5,8 @@ import com.book.store.modal.BookCategory;
 import com.book.store.repository.BookCategoryRepository;
 import com.book.store.services.BookCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +29,16 @@ public class BookCategoryServiceImple implements BookCategoryService {
     @Override
     public List<BookCategory> getAll() {
         return this.bookCategoryRepository.findAll();
+    }
+
+    @Override
+    public Page<BookCategory> findByPagination(Pageable pageable) {
+        return this.bookCategoryRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<BookCategory> searchByTitle(String title) {
+        return this.bookCategoryRepository.searchByTitle(title);
     }
 
     @Override

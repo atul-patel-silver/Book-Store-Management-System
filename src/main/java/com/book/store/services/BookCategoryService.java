@@ -2,6 +2,9 @@ package com.book.store.services;
 
 import com.book.store.modal.BookCategory;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface BookCategoryService {
@@ -13,5 +16,7 @@ public interface BookCategoryService {
 
     public List<BookCategory> getAll();
 
+    public Page<BookCategory> findByPagination(Pageable pageable);
+    List<BookCategory> searchByTitle(String title);
     public void remove(BookCategory bookCategory);
 }
