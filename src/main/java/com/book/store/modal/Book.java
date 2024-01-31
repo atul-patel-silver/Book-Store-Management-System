@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_book")
@@ -40,4 +41,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "bookCategory_Id")
     private BookCategory category;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Cart> carts;
 }

@@ -32,8 +32,6 @@ public class Cart implements Serializable {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<Cart> carts;
 
 
 }

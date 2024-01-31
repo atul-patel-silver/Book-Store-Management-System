@@ -1,5 +1,6 @@
 package com.book.store.services.imple;
 
+import com.book.store.exception.ResourceNotFoundException;
 import com.book.store.modal.Book;
 import com.book.store.modal.Cart;
 import com.book.store.modal.Customer;
@@ -21,7 +22,7 @@ public class CartServiceImple implements CartService {
 
     @Override
     public Cart get(Long id) {
-        return this.cartRepository.findById(id).get();
+        return this.cartRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Cart"," Id ",Integer.toString(Math.toIntExact(id))));
     }
 
     @Override
