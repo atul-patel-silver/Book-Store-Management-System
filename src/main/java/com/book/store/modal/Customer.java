@@ -39,4 +39,12 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Address> address;
+
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
+    @JsonBackReference
+    private Employee employee;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    private List<Cart> carts;
 }
