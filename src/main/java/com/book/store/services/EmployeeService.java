@@ -24,7 +24,7 @@ public interface EmployeeService {
 //
 //    List<Employee> searchStaff(String query);
 //
-//    Page<Employee> allManager(Pageable pageable);
+  List<Employee> allManager();
 //
 //    Page<Employee> allStaff(Pageable pageable);
 //

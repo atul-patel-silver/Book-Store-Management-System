@@ -16,8 +16,8 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     Employee findByCustomerId(@Param("customerId") Long customerId);
 
     //Find All Manager
-//    @Query("SELECT e FROM Employee e where e.customer.role = 'ROLE_EMPLOYEE-M'")
-//    Page<Employee> allManager(Pageable pageable);
+    @Query("SELECT e FROM Employee e where e.customer.role = 'ROLE_EMPLOYEE-M'")
+    List<Employee> allManager();
 //
 //    //find All Staff
 //    @Query("SELECT e FROM Employee e where e.customer.role = 'ROLE_EMPLOYEE-S'")

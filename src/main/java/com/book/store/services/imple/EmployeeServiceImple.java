@@ -21,7 +21,7 @@ public class EmployeeServiceImple implements EmployeeService {
 
     @Override
     public Employee get(Long id) {
-        return this.employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee"," Id ",Integer.toString(Math.toIntExact(id))));
+        return this.employeeRepository.findById(id).get();
     }
 
     @Override
@@ -54,10 +54,10 @@ public class EmployeeServiceImple implements EmployeeService {
 //        return this.employeeRepository.searchStaff(query);
 //    }
 //
-//    @Override
-//    public Page<Employee> allManager(Pageable pageable) {
-//        return this.employeeRepository.allManager(pageable);
-//    }
+    @Override
+    public List<Employee> allManager() {
+        return this.employeeRepository.allManager();
+    }
 //
 //    @Override
 //    public Page<Employee> allStaff(Pageable pageable) {

@@ -1,6 +1,7 @@
 package com.book.store.modal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +30,7 @@ public class Employee implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
-    @JsonBackReference
+    @JsonIgnore
     private Customer customer;
 
 

@@ -21,87 +21,87 @@ import java.util.List;
 public class AdminController {
 
 
-
+    @Autowired
+    private BookCategoryService bookCategoryService;
 
     @Autowired
-    private BookCategoryService  bookCategoryService;
-
-    @Autowired
-    private BCryptPasswordEncoder  passwordEncoder;
-    private Logger logger= LoggerFactory.getLogger(AdminController.class);
+    private BCryptPasswordEncoder passwordEncoder;
+    private Logger logger = LoggerFactory.getLogger(AdminController.class);
     @Autowired
     private BookService bookService;
     @Autowired
-    private EmployeeService  employeeService;
+    private EmployeeService employeeService;
     @Autowired
     private CustomerService customerService;
     @Autowired
     private AddressService addressService;
 
 
+
+    //start all category methode
     //add Category
     @PostMapping("/add-category")
-    public ResponseEntity<String> addCategory(@RequestBody BookCategory bookCategory){
-          bookCategory.setCategoryAddDate(LocalDate.now());
+    public ResponseEntity<String> addCategory(@RequestBody BookCategory bookCategory) {
+        bookCategory.setCategoryAddDate(LocalDate.now());
         BookCategory bookCategory1 = this.bookCategoryService.add(bookCategory);
-        return new ResponseEntity<>(bookCategory1.getCategoryTitle()+" book category  added Successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>(bookCategory1.getCategoryTitle() + " book category  added Successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/get-all-category")
-    public ResponseEntity<List<BookCategory>> getAllCategory(){
+    public ResponseEntity<List<BookCategory>> getAllCategory() {
         List<BookCategory> categories = this.bookCategoryService.getAll();
-        return new ResponseEntity<>(categories,HttpStatus.FOUND);
+        return new ResponseEntity<>(categories, HttpStatus.FOUND);
     }
 
     @GetMapping("/get-single-category/{id}")
-    public ResponseEntity<BookCategory> getSingleCategory(@PathVariable("id") int id){
+    public ResponseEntity<BookCategory> getSingleCategory(@PathVariable("id") int id) {
 
-        return new ResponseEntity<>(this.bookCategoryService.get(id),HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(this.bookCategoryService.get(id), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/delete-category/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") int id){
+    public ResponseEntity<String> deleteCategory(@PathVariable("id") int id) {
         BookCategory bookCategory = this.bookCategoryService.get(id);
         this.bookCategoryService.remove(bookCategory);
-        return new ResponseEntity<>("Book Category has been Deleted!!",HttpStatus.ACCEPTED);
+        return new ResponseEntity<>("Book Category has been Deleted!!", HttpStatus.ACCEPTED);
     }
 
+//end all category methode
 
     //for books
-
     @PostMapping("/add-book")
-    public ResponseEntity<String>  addBook(@RequestBody Book book,@RequestParam("category_id") int id){
+    public ResponseEntity<String> addBook(@RequestBody Book book, @RequestParam("category_id") int id) {
         BookCategory bookCategory = this.bookCategoryService.get(id);
         book.setBookAddDate(LocalDate.now());
         book.setCategory(bookCategory);
         Book book2 = this.bookService.add(book);
 
-        return new ResponseEntity<>(book2.getBookTitle()+" is added Successfully",HttpStatus.CREATED);
+        return new ResponseEntity<>(book2.getBookTitle() + " is added Successfully", HttpStatus.CREATED);
 
     }
 
     @GetMapping("/get-single-book/{id}")
-    public ResponseEntity<Book> getBook(@PathVariable("id") int id){
+    public ResponseEntity<Book> getBook(@PathVariable("id") int id) {
         Book book = this.bookService.get(id);
-        return new ResponseEntity<>(book,HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(book, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/get-all-books")
-    public ResponseEntity<List<Book>> getAllBooks(){
-        return new ResponseEntity<>(this.bookService.getAll(),HttpStatus.ACCEPTED);
+    public ResponseEntity<List<Book>> getAllBooks() {
+        return new ResponseEntity<>(this.bookService.getAll(), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/delete-book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable("id") int id){
+    public ResponseEntity<String> deleteBook(@PathVariable("id") int id) {
         Book book = this.bookService.get(id);
         this.bookService.remove(book);
 
-        return new ResponseEntity<>("Book has been Deleted !!",HttpStatus.CREATED);
+        return new ResponseEntity<>("Book has been Deleted !!", HttpStatus.CREATED);
     }
 
 
     @PostMapping("/add-manager")
-    public ResponseEntity<?> addManager(@RequestBody EmployeePayLoad  manager){
+    public ResponseEntity<?> addManager(@RequestBody EmployeePayLoad manager) {
         try {
             Customer customer1 = this.customerService.customerFindByEmailId(manager.getEmployeeEmailId());
             if (customer1 == null) {
@@ -115,14 +115,12 @@ public class AdminController {
                 Customer customer = Customer.builder()
                         .customerEmailId(manager.getEmployeeEmailId())
                         .role("ROLE_EMPLOYEE-M")
-                        .employee(manager1)
                         .password(this.passwordEncoder.encode(manager.getEmployeePassword()))
                         .joinDate(LocalDateTime.now())
                         .customerName(manager.getEmployeeName())
                         .enable(false)
                         .build();
-                Customer save = this.customerService.save(customer);
-
+                Customer save1 = this.customerService.save(customer);
                 Address build = Address.builder()
                         .area(manager.getArea())
                         .pinCode(manager.getPinCode())
@@ -132,10 +130,15 @@ public class AdminController {
                         .houseNo(manager.getHouseNo())
                         .colony(manager.getColony())
                         .district(manager.getDistrict())
-                        .customer(save)
                         .build();
 
+                build.setCustomer(save1);
                 this.addressService.add(build);
+
+                manager1.setCustomer(save1);
+                this.employeeService.add(manager1);
+
+
                 ApiResponse apiResponse = ApiResponse.builder().message("Manager Added Successfully").success(true).build();
                 return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
             } else {
@@ -143,7 +146,7 @@ public class AdminController {
 
                 return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             ApiResponse apiResponse = ApiResponse.builder().message("Something Went Wrong Try After Some Time...").success(false).build();
             e.printStackTrace();
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -151,23 +154,19 @@ public class AdminController {
     }
 
 
-
     @GetMapping("/delete-manager/{id}")
     public ResponseEntity<?> deleteManager(@PathVariable("id") long id) {
         try {
+            System.out.println(id);
             Employee employee = this.employeeService.get(id);
             Customer customer = employee.getCustomer();
-
-            // Remove the associations
+            List<Address> address = customer.getAddress();
+            for (Address a : address) {
+                this.addressService.delete(a);
+            }
+            this.customerService.remove(customer);
             employee.setCustomer(null);
 
-            // You don't need to set the customer to null for each address individually,
-            // as orphan removal is specified in the entity relationship.
-
-            // Remove the customer (which should cascade to remove associated addresses)
-            this.customerService.remove(customer);
-
-            // Remove the employee
             this.employeeService.delete(employee);
         } catch (Exception e) {
             e.printStackTrace();
@@ -180,7 +179,14 @@ public class AdminController {
     }
 
 
-
+    @GetMapping("/all-manager")
+    public ResponseEntity<?> getAllManager() {
+        List<Employee> employees = this.employeeService.allManager();
+       for (Employee e: employees){
+           System.out.println(e.getCustomer().getCustomerName());
+       }
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
 
 
 }
