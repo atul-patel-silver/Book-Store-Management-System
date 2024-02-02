@@ -100,6 +100,8 @@ public class AdminController {
     }
 
 
+
+    //manager data
     @PostMapping("/add-manager")
     public ResponseEntity<?> addManager(@RequestBody EmployeePayLoad manager) {
         try {
@@ -185,6 +187,94 @@ public class AdminController {
        for (Employee e: employees){
            System.out.println(e.getCustomer().getCustomerName());
        }
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+
+    //staff
+    @PostMapping("/add-staff")
+    public ResponseEntity<?> addStaff(@RequestBody EmployeePayLoad staff) {
+        try {
+            Customer customer1 = this.customerService.customerFindByEmailId(staff.getEmployeeEmailId());
+            if (customer1 == null) {
+
+                Employee manager1 = Employee.builder()
+                        .employeePhoneNumber(staff.getEmployeePhoneNumber())
+                        .employeePosition("STAFF")
+                        .employeeSalary(staff.getEmployeeSalary())
+                        .build();
+
+                Customer customer = Customer.builder()
+                        .customerEmailId(staff.getEmployeeEmailId())
+                        .role("ROLE_EMPLOYEE-S")
+                        .password(this.passwordEncoder.encode(staff.getEmployeePassword()))
+                        .joinDate(LocalDateTime.now())
+                        .customerName(staff.getEmployeeName())
+                        .enable(false)
+                        .build();
+                Customer save1 = this.customerService.save(customer);
+                Address build = Address.builder()
+                        .area(staff.getArea())
+                        .pinCode(staff.getPinCode())
+                        .city(staff.getCity())
+                        .state(staff.getState())
+                        .buildingName(staff.getBuildingName())
+                        .houseNo(staff.getHouseNo())
+                        .colony(staff.getColony())
+                        .district(staff.getDistrict())
+                        .build();
+
+                build.setCustomer(save1);
+                this.addressService.add(build);
+
+                manager1.setCustomer(save1);
+                this.employeeService.add(manager1);
+
+
+                ApiResponse apiResponse = ApiResponse.builder().message("Staff Added Successfully").success(true).build();
+                return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+            } else {
+                ApiResponse apiResponse = ApiResponse.builder().message("Already Register This Email Id Staff try Another One...").success(false).build();
+
+                return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+            }
+        } catch (Exception e) {
+            ApiResponse apiResponse = ApiResponse.builder().message("Something Went Wrong Try After Some Time...").success(false).build();
+            e.printStackTrace();
+            return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+        }
+    }
+
+
+
+    @GetMapping("/delete-staff/{id}")
+    public ResponseEntity<?> deleteStaff(@PathVariable("id") long id) {
+        try {
+            System.out.println(id);
+            Employee employee = this.employeeService.get(id);
+            Customer customer = employee.getCustomer();
+            List<Address> address = customer.getAddress();
+            for (Address a : address) {
+                this.addressService.delete(a);
+            }
+            this.customerService.remove(customer);
+            employee.setCustomer(null);
+
+            this.employeeService.delete(employee);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ApiResponse apiResponse = ApiResponse.builder().message("Something Went Wrong. Try After Some Time...").success(false).build();
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder().message("Successfully banned Staff").success(true).build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/all-staff")
+    public ResponseEntity<?> getAllStaff() {
+        List<Employee> employees = this.employeeService.allStaff();
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 

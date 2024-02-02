@@ -20,8 +20,8 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
     List<Employee> allManager();
 //
 //    //find All Staff
-//    @Query("SELECT e FROM Employee e where e.customer.role = 'ROLE_EMPLOYEE-S'")
-//    Page<Employee> allStaff(Pageable pageable);
+    @Query("SELECT e FROM Employee e where e.customer.role = 'ROLE_EMPLOYEE-S'")
+    List<Employee> allStaff();
 //
 //
 //    //Find All Staff Particular Pincode

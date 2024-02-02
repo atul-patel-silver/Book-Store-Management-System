@@ -25,8 +25,8 @@ public interface EmployeeService {
 //    List<Employee> searchStaff(String query);
 //
   List<Employee> allManager();
-//
-//    Page<Employee> allStaff(Pageable pageable);
+
+   List<Employee> allStaff();
 //
 //    Page<Employee> findAllStaffPincode(String pinCode,Pageable pageable);
 //

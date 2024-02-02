@@ -58,11 +58,11 @@ public class EmployeeServiceImple implements EmployeeService {
     public List<Employee> allManager() {
         return this.employeeRepository.allManager();
     }
-//
-//    @Override
-//    public Page<Employee> allStaff(Pageable pageable) {
-//        return this.employeeRepository.allStaff(pageable);
-//    }
+
+    @Override
+    public List<Employee> allStaff() {
+        return this.employeeRepository.allStaff();
+    }
 //
 //    @Override
 //    public Page<Employee> findAllStaffPincode(String pinCode, Pageable pageable) {
